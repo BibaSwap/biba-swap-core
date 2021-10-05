@@ -1,0 +1,76 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\USER\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js
+
+PATH: 
+  C:\Python39\Scripts\;C:\Python39\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Users\USER\AppData\Local\Programs\Python\Python38\Scripts\;C:\Users\USER\AppData\Local\Programs\Python\Python38\;C:\Users\USER\AppData\Local\Microsoft\WindowsApps;C:\Users\USER\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\USER\AppData\Roaming\npm;C:\src\flutter\bin;C:\Program Files\heroku\bin
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  12.19.0
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:66:26)
+
+npm manifest: 
+  {
+    "name": "@bibaswap-libs/biba-swap-core",
+    "description": "🎛 Core contracts for the Biba Swap protocol",
+    "version": "0.1.0",
+    "homepage": "https://bitcoinbanana.finance",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/BibaSwap/biba-swap-core.git"
+    },
+    "publishConfig": {
+      "registry": "http://registry.npmjs.org"
+    },
+    "files": [
+      "contracts",
+      "build"
+    ],
+    "engines": {
+      "node": ">=10"
+    },
+    "devDependencies": {
+      "@types/chai": "^4.2.6",
+      "@types/mocha": "^5.2.7",
+      "chai": "^4.2.0",
+      "ethereum-waffle": "^2.4.1",
+      "ethereumjs-util": "^6.2.0",
+      "mocha": "^6.2.2",
+      "prettier": "^1.19.1",
+      "rimraf": "^3.0.0",
+      "solc": "0.5.16",
+      "truffle-plugin-verify": "^0.4.0",
+      "ts-node": "^8.5.4",
+      "typescript": "^3.7.3"
+    },
+    "scripts": {
+      "lint": "yarn prettier ./test/*.ts --check",
+      "lint:fix": "yarn prettier ./test/*.ts --write",
+      "clean": "rimraf ./build/",
+      "precompile": "yarn clean",
+      "compile": "waffle .waffle.json",
+      "pretest": "yarn compile",
+      "test": "mocha",
+      "prepublishOnly": "yarn test"
+    },
+    "license": "GPL-3.0-or-later",
+    "dependencies": {
+      "truffle-hdwallet-provider": "^1.0.17",
+      "truffle": "^5.1.41",
+      "truffle-flattener": "^1.4.4"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

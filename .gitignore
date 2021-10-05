@@ -1,3 +1,4 @@
 /node_modules
 .env
 truffle-config.js
+build/
