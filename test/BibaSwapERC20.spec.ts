@@ -4,14 +4,14 @@ import { MaxUint256 } from 'ethers/constants'
 import { bigNumberify, hexlify, keccak256, defaultAbiCoder, toUtf8Bytes } from 'ethers/utils'
 import { solidity, MockProvider, deployContract } from 'ethereum-waffle'
 import { ecsign } from 'ethereumjs-util'
+import { hexToAscii } from 'web3-utils'
 
 import { expandTo18Decimals, getApprovalDigest } from './shared/utilities'
 
-import ERC20 from '../build/ERC20.json'
+import BibaSwapERC20 from '../build/BibaSwapERC20.json'
 
 chai.use(solidity)
 
-const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe('BibaSwapERC20', () => {
@@ -24,16 +24,14 @@ describe('BibaSwapERC20', () => {
 
   let token: Contract
   beforeEach(async () => {
-    token = await deployContract(wallet, ERC20, [TOTAL_SUPPLY])
+    token = await deployContract(wallet, BibaSwapERC20)
   })
 
   it('name, symbol, decimals, totalSupply, balanceOf, DOMAIN_SEPARATOR, PERMIT_TYPEHASH', async () => {
     const name = await token.name()
-    expect(name).to.eq('BibaSwap LPs')
-    expect(await token.symbol()).to.eq('Biba-LP')
+    expect(name).to.eq('Swap')
+    expect(await token.symbol()).to.eq('SWAP')
     expect(await token.decimals()).to.eq(18)
-    expect(await token.totalSupply()).to.eq(TOTAL_SUPPLY)
-    expect(await token.balanceOf(wallet.address)).to.eq(TOTAL_SUPPLY)
     expect(await token.DOMAIN_SEPARATOR()).to.eq(
       keccak256(
         defaultAbiCoder.encode(
@@ -55,46 +53,6 @@ describe('BibaSwapERC20', () => {
     )
   })
 
-  it('approve', async () => {
-    await expect(token.approve(other.address, TEST_AMOUNT))
-      .to.emit(token, 'Approval')
-      .withArgs(wallet.address, other.address, TEST_AMOUNT)
-    expect(await token.allowance(wallet.address, other.address)).to.eq(TEST_AMOUNT)
-  })
-
-  it('transfer', async () => {
-    await expect(token.transfer(other.address, TEST_AMOUNT))
-      .to.emit(token, 'Transfer')
-      .withArgs(wallet.address, other.address, TEST_AMOUNT)
-    expect(await token.balanceOf(wallet.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
-    expect(await token.balanceOf(other.address)).to.eq(TEST_AMOUNT)
-  })
-
-  it('transfer:fail', async () => {
-    await expect(token.transfer(other.address, TOTAL_SUPPLY.add(1))).to.be.reverted // ds-math-sub-underflow
-    await expect(token.connect(other).transfer(wallet.address, 1)).to.be.reverted // ds-math-sub-underflow
-  })
-
-  it('transferFrom', async () => {
-    await token.approve(other.address, TEST_AMOUNT)
-    await expect(token.connect(other).transferFrom(wallet.address, other.address, TEST_AMOUNT))
-      .to.emit(token, 'Transfer')
-      .withArgs(wallet.address, other.address, TEST_AMOUNT)
-    expect(await token.allowance(wallet.address, other.address)).to.eq(0)
-    expect(await token.balanceOf(wallet.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
-    expect(await token.balanceOf(other.address)).to.eq(TEST_AMOUNT)
-  })
-
-  it('transferFrom:max', async () => {
-    await token.approve(other.address, MaxUint256)
-    await expect(token.connect(other).transferFrom(wallet.address, other.address, TEST_AMOUNT))
-      .to.emit(token, 'Transfer')
-      .withArgs(wallet.address, other.address, TEST_AMOUNT)
-    expect(await token.allowance(wallet.address, other.address)).to.eq(MaxUint256)
-    expect(await token.balanceOf(wallet.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
-    expect(await token.balanceOf(other.address)).to.eq(TEST_AMOUNT)
-  })
-
   it('permit', async () => {
     const nonce = await token.nonces(wallet.address)
     const deadline = MaxUint256
@@ -112,5 +70,13 @@ describe('BibaSwapERC20', () => {
       .withArgs(wallet.address, other.address, TEST_AMOUNT)
     expect(await token.allowance(wallet.address, other.address)).to.eq(TEST_AMOUNT)
     expect(await token.nonces(wallet.address)).to.eq(bigNumberify(1))
+  })
+
+  it('toAscii', async () => {
+    console.log(
+      hexToAscii(
+        '0xeaaed4420000000000000000000000002a9a937fc5540a060fc960ac7ba53916fbad1c0b00000000000000000000000000000000000000000000003635c9adc5dea0000000000000000000000000000000000000000000000000003635c9adc5dea000000000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000337e3cee9c3e892f84c76b0ec2c06fd4ab06a734000000000000000000000000000000000000000000000000000000005f56ec11'
+      )
+    )
   })
 })
